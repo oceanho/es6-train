@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8" />
+    <title>ES6 arrow function sample</title>
+</head>
+<body>
+    <button id="btn"> click me. </button>
+    <script>
+
+        //
+        // 1、通过箭头函数定义类对象
+        // 这种写法是错误的，实例化 Person 的时候是会报错
+        //const Person = (name,age) => {
+        //    this.name = name;
+        //    this.age = age;
+        //}
+        //
+        // Uncaught TypeError: Person is not a constructor
+        //const Ocean = new Person('ocean',25);
+
+        // 正确的写法是使用 function 的方式定义 Person 类
+        const Person = function(name,age) {
+            this.name = name;
+            this.age = age;
+        }
+        const Ocean = new Person('ocean',25);
+        console.log(Ocean)
+        
+        //
+        // 2、对象方法不能用箭头函数，因为箭头函数不会执行 this 绑定
+        //Person.prototype.display = () => {
+        //    // this === window
+        //    console.log(this)
+        //    // 无法正确输出 name
+        //    console.log(`Hello, my name is ${this.name}, I am ${this.age} old.`)
+        //}
+
+        // 正确的写法
+        Person.prototype.display = function() {
+            // this === 调用的对象，如上面的实例 Ocean
+            console.log(this)
+            // 正确输出 name
+            console.log(`Hello, my name is ${this.name}, I am ${this.age} old.`)
+        }
+
+        //
+        // 3、真正需要使用 this 的时候，不能使用箭头函数
+        const button = document.querySelector("#btn");
+        //button.addEventListener("click", () => {
+        //    console.log(this) // window
+        //    this.innerText = `${new Date().getTime()}` // 无效，设置的是window.innerText
+        //    
+        //})
+        // 正确的写法
+        button.addEventListener("click", function(){
+            console.log(this)
+            this.innerText = `${new Date().getTime()}`
+
+            //
+            // setTimeout 中需要操作 button 对象，所以使用箭头函数，这样 this 不会被绑定。
+            setTimeout(() => {
+                this.innerText = "click me.";
+            },2000)
+        })
+
+
+        // 4、使用 arguments 的时候，不能使用箭头函数
+        //const sum = () => {
+        //    return Array.from(arguments).reduce((prevSum,value) => prevSum+=value)
+        //}
+        // Uncaught ReferenceError: arguments is not defined
+        //sum(1,2,3,4,5,6,7,8,9,10)
+
+        // 正确的写法
+        const sum = function() {
+            return Array.from(arguments).reduce((prevSum,value) => prevSum+=value)
+        }
+        console.log(`1-10之和为${sum(1,2,3,4,5,6,7,8,9,10)}`)
+    </script>
+</body>
